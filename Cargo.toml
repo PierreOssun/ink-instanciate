@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "contracts/dummy",
+    "contracts/parent",
+]
+
+[profile.release]
+overflow-checks = false
