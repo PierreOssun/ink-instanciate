@@ -5,18 +5,17 @@ authors = ["Supercolony <pierre.ossun@supercolony.net>"]
 edition = "2018"
 
 [dependencies]
-ink_primitives = { version = "3.0.0-rc4", git = "https://github.com/paritytech/ink", default-features = false }
-ink_metadata = { version = "3.0.0-rc4", git = "https://github.com/paritytech/ink", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.0.0-rc4", git = "https://github.com/paritytech/ink", default-features = false }
-ink_storage = { version = "3.0.0-rc4", git = "https://github.com/paritytech/ink", default-features = false }
-ink_lang = { version = "3.0.0-rc4", git = "https://github.com/paritytech/ink", default-features = false }
-ink_prelude = { version = "3.0.0-rc4", git = "https://github.com/paritytech/ink", default-features = false }
+ink_primitives = { git = "https://github.com/Supercolony-net/ink", branch = "feature/recovery", default-features = false }
+ink_metadata = { git = "https://github.com/Supercolony-net/ink", branch = "feature/recovery", default-features = false, features = ["derive"], optional = true }
+ink_env = { git = "https://github.com/Supercolony-net/ink", branch = "feature/recovery", default-features = false }
+ink_storage = { git = "https://github.com/Supercolony-net/ink", branch = "feature/recovery", default-features = false }
+ink_lang = { git = "https://github.com/Supercolony-net/ink", branch = "feature/recovery", default-features = false }
+ink_prelude = { git = "https://github.com/Supercolony-net/ink", branch = "feature/recovery", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "2.1", default-features = false, features = ["derive"] }
 scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
 dummy = { version = "0.1.0", path = "../dummy", default-features = false, features = ["ink-as-dependency"] }
-hex = { version = "0.4", default-features = false, features = ["alloc"] }
 
 [lib]
 name = "parent"
@@ -37,5 +36,5 @@ std = [
     "scale-info/std",
     "dummy/std",
     "ink_prelude/std",
-    "hex/std"
 ]
+ink-as-dependency = []
