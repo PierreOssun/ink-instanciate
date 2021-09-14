@@ -16,6 +16,7 @@ export const setupContract = async (name, constructor, ...args) => {
 
   const contractFactory = await getContractFactory(name, defaultSigner.address)
   const contract = await contractFactory.deploy(constructor, ...args)
+
   const abi = artifacts.readArtifact(name)
 
   return {
@@ -40,6 +41,8 @@ describe("Instanciate", () => {
     await api.isReady
     const dummyContract = await setupContract('dummy', 'new')
     const parentContract = await setupContract('parent', 'new')
+    let hash = dummyContract.contract.abi.project.source.wasmHash
+    await parentContract.tx.instanciateDummy(hash)
     const receiver = await getRandomSigner();
 
     return { dummyContract, parentContract, receiver };
@@ -55,24 +58,33 @@ describe("Instanciate", () => {
     return { dummyContract, parentContract, receiver };
   }
 
-  it("It should instantiate dummy contract", async () => {
-    const { parentContract, dummyContract } = await setup();
-    let hash = dummyContract.contract.abi.project.source.wasmHash
-    await parentContract.tx.childInstance(hash)
-    let value = await dummyContract.query.getValue()
+  it("It should instantiate dummy contract- and flip works", async () => {
+    const { parentContract } = await setup();
+    let value = await parentContract.query.flipValue()
     expect(value.output).to.equal(true);
-    await dummyContract.tx.flip()
-    let value2 = await dummyContract.query.getValue()
+    await parentContract.tx.flip()
+    let value2 = await parentContract.query.flipValue()
     expect(value2.output).to.equal(false);
   });
 
-  it("It should instantiate dummy contract in constructor", async () => {
-    const { dummyContract } = await setup_instanciator();
-    let value = await dummyContract.query.getValue()
-    expect(value.output).to.equal(true);
-    await dummyContract.tx.flip()
-    let value2 = await dummyContract.query.getValue()
-    expect(value2.output).to.equal(false);
+  it("It should instantiate dummy contract- and get account id", async () => {
+    const { parentContract } = await setup();
+    let address = await parentContract.query.dummyAccountId()
+    console.log(address.output)
   });
 
+  it("It should instantiate dummy contract in constructor - and flip works", async () => {
+    const { parentContract } = await setup_instanciator();
+    let value = await parentContract.query.flipValue()
+    expect(value.output).to.equal(true);
+    await parentContract.tx.flip()
+    let value2 = await parentContract.query.flipValue()
+    expect(value2.output).to.equal(false); // Fail to decode
+  });
+
+  it("It should instantiate dummy contract in constructor - and get account id", async () => {
+    const { parentContract } = await setup_instanciator();
+    let address = await parentContract.query.dummyAccountId()
+    console.log(address.output) // Fail to decode
+  });
 });

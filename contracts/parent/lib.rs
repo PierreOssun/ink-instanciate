@@ -38,7 +38,7 @@ pub mod parent {
         }
 
         #[ink(message)]
-        pub fn child_instance(&mut self, child_code_hash: Hash) {
+        pub fn instanciate_dummy(&mut self, child_code_hash: Hash) {
             let dummy_instance = Dummy::new()
                 .endowment(Self::env().balance() / 4)
                 .code_hash(child_code_hash)
@@ -50,6 +50,21 @@ pub mod parent {
                 .instantiate()
                 .expect("Could not instantiate Dummy contract");
             self.dummy = Some(dummy_instance);
+        }
+
+        #[ink(message)]
+        pub fn flip(&mut self) {
+            self.dummy.clone().unwrap().flip()
+        }
+
+        #[ink(message)]
+        pub fn flip_value(&self) -> bool {
+            self.dummy.clone().unwrap().get_value()
+        }
+
+        #[ink(message)]
+        pub fn dummy_account_id(&self) -> AccountId {
+            self.dummy.clone().unwrap().to_account_id()
         }
     }
 }
