@@ -37,17 +37,6 @@ describe("Instanciate", () => {
     return api.disconnect();
   });
 
-  async function setup() {
-    await api.isReady
-    const dummyContract = await setupContract('dummy', 'new')
-    const parentContract = await setupContract('parent', 'new')
-    let hash = dummyContract.contract.abi.project.source.wasmHash
-    await parentContract.tx.instanciateDummy(hash)
-    const receiver = await getRandomSigner();
-
-    return { dummyContract, parentContract, receiver };
-  }
-
   async function setup_instanciator() {
     await api.isReady
     const dummyContract = await setupContract('dummy', 'new')
@@ -58,32 +47,16 @@ describe("Instanciate", () => {
     return { dummyContract, parentContract, receiver };
   }
 
-  it("It should instantiate dummy contract- and flip works", async () => {
-    const { parentContract } = await setup();
-    let value = await parentContract.query.flipValue()
-    expect(value.output).to.equal(true);
-    await parentContract.tx.flip()
-    let value2 = await parentContract.query.flipValue()
-    expect(value2.output).to.equal(false);
-  });
-
-  it("It should instantiate dummy contract- and get account id", async () => {
-    const { parentContract } = await setup();
-    let address = await parentContract.query.dummyAccountId()
-    console.log(address.output)
-  });
-
-  it("It should instantiate dummy contract in constructor - and flip works", async () => {
-    const { parentContract } = await setup_instanciator();
-    let value = await parentContract.query.flipValue()
-    expect(value.output).to.equal(true);
-    await parentContract.tx.flip()
-    let value2 = await parentContract.query.flipValue()
-    expect(value2.output).to.equal(false); // Fail to decode
-  });
-
   it("It should instantiate dummy contract in constructor - and get account id", async () => {
     const { parentContract } = await setup_instanciator();
+    console.log(parentContract.contract.address.toHex());
+    // It is not expected part of test, it shows only the problem.
+    // It shows that the parent contract contains the ABI of parent contract but it is the dummy contract.
+    // It uses the address of the dummy contract(instantiated by parent contract) inside.
+    // Dummy and parent contract contain `flip` method, it is why this line will be executed correctly.
+    // But on the line 60 it will fail.
+    await parentContract.tx.flip()
+    console.log("Fail before executing of parent method");
     let address = await parentContract.query.dummyAccountId()
     console.log(address.output) // Fail to decode
   });

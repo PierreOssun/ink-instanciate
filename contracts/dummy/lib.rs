@@ -4,6 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 pub mod dummy {
+    #[derive(Default)]
     #[ink(storage)]
     pub struct Dummy {
         value: bool,
