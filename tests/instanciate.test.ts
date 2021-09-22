@@ -9,24 +9,21 @@ const { getContractFactory, getRandomSigner } = patract;
 const { api, getAddresses, getSigners } = network;
 
 export const setupContract = async (name, constructor, ...args) => {
-  const one = new BN(10).pow(new BN(api.registry.chainDecimals[0]))
-  const signers = await getAddresses()
-  const defaultSigner = await getRandomSigner(signers[0], one.muln(10000))
-  const alice = await getRandomSigner(signers[1], one.muln(10000))
+  await api.isReady
+  const signerAddresses = await getAddresses();
+  const Alice = signerAddresses[0];
+  const sender = await getRandomSigner(Alice, "10000 UNIT");
 
-  const contractFactory = await getContractFactory(name, defaultSigner.address)
+  const contractFactory = await getContractFactory(name, sender.address)
   const contract = await contractFactory.deploy(constructor, ...args)
 
   const abi = artifacts.readArtifact(name)
 
   return {
-    defaultSigner,
-    alice,
-    accounts: [alice, await getRandomSigner(), await getRandomSigner()],
+    accounts: [await getRandomSigner(), await getRandomSigner()],
     contractFactory,
     contract,
     abi,
-    one,
     query: contract.query,
     tx: contract.tx
   }
